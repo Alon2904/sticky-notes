@@ -4,17 +4,26 @@ import Image from 'next/image';
 
 export default function NavigationMain() {
   return (
-    <>
+    <div 
+      className="fixed h-[100dvh] flex flex-col"
+      style={{
+        left: '16px',
+        top: 0,
+        width: '40px',
+        zIndex: 50,
+        minHeight: '600px', // Minimum height to ensure pills don't overlap
+      }}
+    >
       {/* Main Navigation Pill */}
       <div 
-        className="fixed bg-white flex flex-col items-center py-4 rounded-[28px] z-50 shadow-custom"
+        className="bg-white flex flex-col items-center py-4 rounded-[28px] shadow-custom mt-4"
         style={{
-          top: '16px',
-          left: '16px',
           width: '40px',
           height: '488px',
           backgroundColor: 'rgba(255, 255, 255, 1)',
           opacity: 1,
+          minHeight: '488px', // Ensure minimum height
+          flexShrink: 0, // Prevent shrinking
         }}>
         {/* Logo */}
         <div 
@@ -41,11 +50,21 @@ export default function NavigationMain() {
         </div>
       </div>
 
+      {/* Spacer to push bottom pill to bottom */}
+      <div className="flex-grow min-h-[32px]" /> {/* Minimum gap between pills */}
+
       {/* Bottom Pill */}
       <div 
-        className="shadow-custom bottom-pill rounded-[28px] bg-white"
+        className="shadow-custom rounded-[28px] bg-white mb-4"
+        style={{
+          width: '40px',
+          height: '40px',
+          backgroundColor: 'rgba(255, 255, 255, 1)',
+          opacity: 1,
+          flexShrink: 0, // Prevent shrinking
+        }}
       />
-    </>
-  )
+    </div>
+  );
 }
 
