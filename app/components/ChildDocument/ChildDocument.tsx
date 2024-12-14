@@ -1,8 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import Paper from './shared/Paper';
-import Button from './shared/Button';
+import Paper from '../shared/Paper';
 import ChildPageNavigationPill from './ChildPageNavigationPill';
 
 interface ChildDocumentProps {
@@ -11,7 +10,7 @@ interface ChildDocumentProps {
   width: number;
 }
 
-export default function ChildDocument({ onClose, onClick, width }: ChildDocumentProps) {
+export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
   const paperRef = useRef<HTMLDivElement>(null);
   const [paperHeight, setPaperHeight] = useState(0);
 
@@ -37,15 +36,7 @@ export default function ChildDocument({ onClose, onClick, width }: ChildDocument
       }}
     >
       <div className="absolute p-[32px]">
-        <Button 
-          size="small"
-          onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-            e.stopPropagation();
-            onClose();
-          }}
-        >
-          Close
-        </Button>
+
       </div>
       {paperHeight > 0 && (
         <ChildPageNavigationPill 

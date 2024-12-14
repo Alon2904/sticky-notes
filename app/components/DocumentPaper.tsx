@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Paper from './shared/Paper';
 import Button from './shared/Button';
-import ChildDocument from './ChildDocument';
+import ChildDocument from './ChildDocument/ChildDocument';
 
 export default function DocumentPaper() {
   const [showChildPaper, setShowChildPaper] = useState(false);
