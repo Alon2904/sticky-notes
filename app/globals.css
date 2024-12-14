@@ -5,6 +5,9 @@
 :root {
   --background: #FFFCF9;
   --foreground: #171717;
+  --tag-yellow: #FEE0B2;
+  --tag-peach: #FFDCCF;
+  --tag-purple: #E7DFFF;
 }
 
 body {
