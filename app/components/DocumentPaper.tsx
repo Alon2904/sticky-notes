@@ -33,8 +33,10 @@ export default function DocumentPaper() {
       {/* Child Paper with all its features */}
       {showChildPaper && (
         <ChildDocument 
-          onClose={() => setShowChildPaper(false)}
-          onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          onClick={(e: React.MouseEvent) => {
+            e.stopPropagation();
+            setShowChildPaper(false);
+          }}
           width={980}
         />
       )}
