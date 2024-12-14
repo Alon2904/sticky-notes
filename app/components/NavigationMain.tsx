@@ -26,7 +26,7 @@ export default function NavigationMain() {
             left: '8px',
           }}>
           <Image
-            src="/YellowBoxWithTick/group.png"
+            src="/YellowBoxWithTick/Group.png"
             alt="Logo"
             width={24}
             height={22.71}
