@@ -20,9 +20,11 @@ export default function Paper({
       className={`bg-white z-40 shadow-custom ${className}`}
       onClick={onClick}
       style={{
+        position: noMargin ? 'absolute' : 'relative',
         marginTop: noMargin ? 0 : '92px',
-        marginLeft: noMargin ? 0 : '127px',
-        width: 'calc(100vw - 254px)',
+        left: noMargin ? '107px' : '50%',
+        transform: noMargin ? 'none' : 'translateX(-50%)',
+        width: style.width || '940px',
         minHeight: 'calc((100vw - 254px) * 1.4142)',
         backgroundColor: 'rgba(255, 255, 255, 1)',
         opacity: 1,

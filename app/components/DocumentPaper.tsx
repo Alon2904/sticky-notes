@@ -11,12 +11,17 @@ export default function DocumentPaper() {
   return (
     <div className="relative">
       {/* Original Paper */}
-      <Paper onClick={() => showChildPaper && setShowChildPaper(false)}>
+      <Paper 
+        onClick={() => showChildPaper && setShowChildPaper(false)}
+        style={{
+          width: showChildPaper ? '936px' : '940px',
+        }}
+      >
         <div className="absolute p-[32px]">
           <Button 
             size="large" 
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              e.stopPropagation(); // Prevent click from bubbling to Paper
+              e.stopPropagation();
               setShowChildPaper(true);
             }}
           >
@@ -29,7 +34,8 @@ export default function DocumentPaper() {
       {showChildPaper && (
         <ChildDocument 
           onClose={() => setShowChildPaper(false)}
-          onClick={(e: React.MouseEvent) => e.stopPropagation()} // Prevent clicks on child from closing itself
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          width={980}
         />
       )}
     </div>
