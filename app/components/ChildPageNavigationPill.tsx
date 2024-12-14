@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 interface ChildPageNavigationPillProps {
   parentHeight: number;
@@ -100,14 +101,24 @@ export default function ChildPageNavigationPill({ parentHeight }: ChildPageNavig
         opacity: 1,
         cursor: isDragging ? 'grabbing' : 'grab',
         userSelect: 'none',
-        touchAction: 'none', // Prevent default touch actions
+        touchAction: 'none',
         zIndex: 51,
         borderRadius: '28px',
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
     >
-      {/* Add any internal content here */}
+      <div className="flex flex-col items-center px-2 pt-4">
+        <Image
+          src="/notes/notes.png"
+          alt="Notes"
+          width={24}
+          height={24}
+          style={{
+            objectFit: 'contain',
+          }}
+        />
+      </div>
     </div>
   );
 } 
