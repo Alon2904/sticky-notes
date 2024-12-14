@@ -1,5 +1,7 @@
 import Image from 'next/image';
 
+//TODO: make this responsive for mobile - small pill location affected on mobile screens
+
 export default function NavigationMain() {
   return (
     <>
