@@ -3,9 +3,9 @@
 import { useRef, useEffect, useState } from 'react';
 import Paper from '../shared/Paper';
 import ChildPageNavigationPill from './ChildPageNavigationPill';
+import YellowBox from './YellowBox';
 
 interface ChildDocumentProps {
-  onClose: () => void;
   onClick?: (e: React.MouseEvent) => void;
   width: number;
 }
@@ -35,9 +35,7 @@ export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
         zIndex: 50,
       }}
     >
-      <div className="absolute p-[32px]">
-
-      </div>
+      <YellowBox />
       {paperHeight > 0 && (
         <ChildPageNavigationPill 
           parentHeight={paperHeight}
