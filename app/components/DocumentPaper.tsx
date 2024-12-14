@@ -12,7 +12,7 @@ export default function DocumentPaper() {
     <div className="relative">
       {/* Original Paper */}
       <Paper 
-        onClick={() => showChildPaper && setShowChildPaper(false)}
+        onClick={showChildPaper ? () => setShowChildPaper(false) : undefined}
         style={{
           width: showChildPaper ? '936px' : '940px',
         }}
@@ -33,10 +33,6 @@ export default function DocumentPaper() {
       {/* Child Paper with all its features */}
       {showChildPaper && (
         <ChildDocument 
-          onClick={(e: React.MouseEvent) => {
-            e.stopPropagation();
-            setShowChildPaper(false);
-          }}
           width={980}
         />
       )}
