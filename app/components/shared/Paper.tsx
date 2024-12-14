@@ -5,6 +5,7 @@ interface PaperProps {
   className?: string;
   style?: CSSProperties;
   noMargin?: boolean;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 export default function Paper({ 
@@ -12,10 +13,12 @@ export default function Paper({
   className = '', 
   style = {}, 
   noMargin = false,
+  onClick,
 }: PaperProps) {
   return (
     <div
       className={`bg-white z-40 shadow-custom ${className}`}
+      onClick={onClick}
       style={{
         marginTop: noMargin ? 0 : '92px',
         marginLeft: noMargin ? 0 : '127px',
@@ -24,6 +27,7 @@ export default function Paper({
         backgroundColor: 'rgba(255, 255, 255, 1)',
         opacity: 1,
         borderRadius: '4px 4px 0 0',
+        cursor: onClick ? 'pointer' : 'default',
         ...style,
       }}
     >

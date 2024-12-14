@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Paper from './shared/Paper';
 import Button from './shared/Button';
+import ChildDocument from './ChildDocument';
 
 export default function DocumentPaper() {
   const [showChildPaper, setShowChildPaper] = useState(false);
@@ -10,37 +11,26 @@ export default function DocumentPaper() {
   return (
     <div className="relative">
       {/* Original Paper */}
-      <Paper>
+      <Paper onClick={() => showChildPaper && setShowChildPaper(false)}>
         <div className="absolute p-[32px]">
           <Button 
             size="large" 
-            onClick={() => setShowChildPaper(true)}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.stopPropagation(); // Prevent click from bubbling to Paper
+              setShowChildPaper(true);
+            }}
           >
             Open Child Document
           </Button>
         </div>
       </Paper>
 
-      {/* Child Paper */}
+      {/* Child Paper with all its features */}
       {showChildPaper && (
-        <Paper
-          className="absolute"
-          noMargin
-          style={{
-            top: '20px',
-            left: '107px',
-            zIndex: 50,
-          }}
-        >
-          <div className="absolute p-[32px]">
-            <Button 
-              size="small"
-              onClick={() => setShowChildPaper(false)}
-            >
-              Close
-            </Button>
-          </div>
-        </Paper>
+        <ChildDocument 
+          onClose={() => setShowChildPaper(false)}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()} // Prevent clicks on child from closing itself
+        />
       )}
     </div>
   );
