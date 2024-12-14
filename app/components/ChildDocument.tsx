@@ -1,7 +1,9 @@
 'use client';
 
+import { useRef, useEffect, useState } from 'react';
 import Paper from './shared/Paper';
 import Button from './shared/Button';
+import ChildPageNavigationPill from './ChildPageNavigationPill';
 
 interface ChildDocumentProps {
   onClose: () => void;
@@ -10,20 +12,28 @@ interface ChildDocumentProps {
 }
 
 export default function ChildDocument({ onClose, onClick, width }: ChildDocumentProps) {
-  // Calculate the left position based on the viewport center
-  const leftPosition = `calc(50% - 470px)`; // Half of 940px parent width
+  const paperRef = useRef<HTMLDivElement>(null);
+  const [paperHeight, setPaperHeight] = useState(0);
+
+  useEffect(() => {
+    if (paperRef.current) {
+      setPaperHeight(paperRef.current.getBoundingClientRect().height);
+    }
+  }, []);
 
   return (
     <Paper
+      ref={paperRef}
       className="absolute"
       noMargin
       onClick={onClick}
       style={{
+        position: 'absolute',
         top: '20px',
-        left: leftPosition,
-        transform: 'translateX(-22px)', // Offset to achieve the exact positioning
-        zIndex: 50,
+        left: '50%',
+        transform: 'translateX(-50%)',
         width: `${width}px`,
+        zIndex: 50,
       }}
     >
       <div className="absolute p-[32px]">
@@ -37,6 +47,11 @@ export default function ChildDocument({ onClose, onClick, width }: ChildDocument
           Close
         </Button>
       </div>
+      {paperHeight > 0 && (
+        <ChildPageNavigationPill 
+          parentHeight={paperHeight}
+        />
+      )}
     </Paper>
   );
 } 

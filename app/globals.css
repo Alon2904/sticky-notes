@@ -24,19 +24,7 @@ body {
   visibility: visible !important;
 }
 
-/* Portrait mode (vertical) */
-@media screen and (orientation: portrait) {
-  .bottom-pill {
-    bottom: 16px !important;
-  }
-}
 
-/* Landscape mode (horizontal) */
-@media screen and (orientation: landscape) {
-  .bottom-pill {
-    bottom: 16px !important;
-  }
-}
 
 .shadow-custom {
   box-shadow: 0px -1px 1px rgba(136, 116, 89, 0.05),

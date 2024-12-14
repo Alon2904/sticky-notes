@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, forwardRef } from 'react';
 
 interface PaperProps {
   children: React.ReactNode;
@@ -8,15 +8,16 @@ interface PaperProps {
   onClick?: (e: React.MouseEvent) => void;
 }
 
-export default function Paper({ 
+const Paper = forwardRef<HTMLDivElement, PaperProps>(({ 
   children, 
   className = '', 
   style = {}, 
   noMargin = false,
   onClick,
-}: PaperProps) {
+}, ref) => {
   return (
     <div
+      ref={ref}
       className={`bg-white z-40 shadow-custom ${className}`}
       onClick={onClick}
       style={{
@@ -36,4 +37,8 @@ export default function Paper({
       {children}
     </div>
   );
-} 
+});
+
+Paper.displayName = 'Paper';
+
+export default Paper; 
