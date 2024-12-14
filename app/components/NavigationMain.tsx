@@ -43,15 +43,8 @@ export default function NavigationMain() {
 
       {/* Bottom Pill */}
       <div 
-        className="fixed bg-white rounded-[28px] z-50 bottom-pill shadow-custom"
-        style={{
-          left: '16px',
-          width: '40px',
-          height: '40px',
-          backgroundColor: 'rgba(255, 255, 255, 1)',
-          opacity: 1,
-        }}>
-      </div>
+        className="shadow-custom bottom-pill rounded-[28px] bg-white"
+      />
     </>
   )
 }

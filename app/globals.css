@@ -13,26 +13,28 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* iPad Pro 11" specific styles */
-@media screen and (width: 834px) and (height: 1194px), 
-       screen and (width: 1194px) and (height: 834px) {
+/* Default bottom pill positioning */
+.bottom-pill {
+  position: fixed !important;
+  left: 16px !important;
+  width: 40px !important;
+  height: 40px !important;
+  bottom: 16px !important;
+  z-index: 50 !important;
+  visibility: visible !important;
+}
+
+/* Portrait mode (vertical) */
+@media screen and (orientation: portrait) {
   .bottom-pill {
-    position: fixed !important;
-    top: 778px !important;
-    left: 16px !important;
-    width: 40px !important;
-    height: 40px !important;
+    bottom: 16px !important;
   }
 }
 
-/* For larger screens */
-@media screen and (min-width: 1195px) {
+/* Landscape mode (horizontal) */
+@media screen and (orientation: landscape) {
   .bottom-pill {
-    position: fixed !important;
     bottom: 16px !important;
-    left: 16px !important;
-    width: 40px !important;
-    height: 40px !important;
   }
 }
 
