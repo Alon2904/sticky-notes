@@ -5,6 +5,8 @@ interface ButtonProps {
   size?: 'large' | 'small';
 }
 
+//TODO: make button responsive for mobile
+
 export default function Button({ 
   children, 
   onClick, 
