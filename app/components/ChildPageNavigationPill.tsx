@@ -9,7 +9,7 @@ interface ChildPageNavigationPillProps {
 
 export default function ChildPageNavigationPill({ parentHeight }: ChildPageNavigationPillProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState(353);
+  const [position, setPosition] = useState(241);
   const pillRef = useRef<HTMLDivElement>(null);
   const dragStartY = useRef<number>(0);
   const startPosition = useRef<number>(0);
