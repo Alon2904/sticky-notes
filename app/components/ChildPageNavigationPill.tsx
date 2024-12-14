@@ -8,46 +8,83 @@ interface ChildPageNavigationPillProps {
 
 export default function ChildPageNavigationPill({ parentHeight }: ChildPageNavigationPillProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState(353); // Updated initial Y position
+  const [position, setPosition] = useState(353);
   const pillRef = useRef<HTMLDivElement>(null);
   const dragStartY = useRef<number>(0);
   const startPosition = useRef<number>(0);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleDragStart = (clientY: number) => {
     setIsDragging(true);
-    dragStartY.current = e.clientY;
+    dragStartY.current = clientY;
     startPosition.current = position;
   };
 
+  const handleDragMove = (clientY: number) => {
+    if (!isDragging) return;
+
+    const deltaY = clientY - dragStartY.current;
+    const newPosition = startPosition.current + deltaY;
+
+    // Constrain vertical movement within parent bounds
+    const minPosition = 0;
+    const maxPosition = parentHeight - 240; // pill height
+    const constrainedPosition = Math.max(minPosition, Math.min(newPosition, maxPosition));
+
+    setPosition(constrainedPosition);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  // Mouse event handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleDragStart(e.clientY);
+  };
+
+  // Touch event handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    handleDragStart(touch.clientY);
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    handleDragMove(touch.clientY);
+  };
+
+  const handleTouchEnd = (e: TouchEvent) => {
+    e.preventDefault();
+    handleDragEnd();
+  };
+
   useEffect(() => {
+    if (!isDragging) return;
+
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-
-      const deltaY = e.clientY - dragStartY.current;
-      const newPosition = startPosition.current + deltaY;
-
-      // Constrain vertical movement within parent bounds
-      const minPosition = 0;
-      const maxPosition = parentHeight - 240; // pill height
-      const constrainedPosition = Math.max(minPosition, Math.min(newPosition, maxPosition));
-
-      setPosition(constrainedPosition);
+      handleDragMove(e.clientY);
     };
 
     const handleMouseUp = () => {
-      setIsDragging(false);
+      handleDragEnd();
     };
 
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    }
+    // Add both mouse and touch event listeners
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd, { passive: false });
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [isDragging, parentHeight]);
+  }, [isDragging]);
 
   return (
     <div 
@@ -57,16 +94,18 @@ export default function ChildPageNavigationPill({ parentHeight }: ChildPageNavig
         position: 'absolute',
         width: '40px',
         height: '240px',
-        left: '956px', // Updated X position
+        left: '956px',
         top: `${position}px`,
         backgroundColor: 'rgba(255, 255, 255, 1)',
         opacity: 1,
         cursor: isDragging ? 'grabbing' : 'grab',
         userSelect: 'none',
+        touchAction: 'none', // Prevent default touch actions
         zIndex: 51,
         borderRadius: '28px',
       }}
       onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
     >
       {/* Add any internal content here */}
     </div>
