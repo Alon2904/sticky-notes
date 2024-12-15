@@ -3,12 +3,18 @@
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase/config';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../providers/AuthProvider';
+import { documentService } from '../firebase/documentService';
 
 export default function LogoutButton() {
   const router = useRouter();
+  const { user } = useAuth();
 
   const handleLogout = async () => {
     try {
+      if (user) {
+        documentService.clearCache(user.uid); // Clear cache on logout
+      }
       await signOut(auth);
       router.push('/login');
     } catch (error) {

@@ -6,6 +6,8 @@ import ChildPageNavigationPill from './ChildPageNavigationPill';
 import HeaderBox from './HeaderBox';
 import PaperTag from './PaperTag';
 import StickyNote from './StickyNote';
+import { useAuth } from '../../providers/AuthProvider';
+import { documentService } from '../../firebase/documentService';
 
 interface ChildDocumentProps {
   onClick?: (e: React.MouseEvent) => void;
@@ -67,6 +69,7 @@ const findAvailablePosition = (notes: StickyNoteType[], baseX: number, baseY: nu
 };
 
 export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
+  const { user } = useAuth();
   const paperRef = useRef<HTMLDivElement>(null);
   const [paperHeight, setPaperHeight] = useState(0);
   const [activePage, setActivePage] = useState(1);
@@ -79,6 +82,43 @@ export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
   const INITIAL_TOP = 16;
   const TAG_HEIGHT = 32;
   const TAG_GAP = 4;
+
+  // Load data when component mounts
+  useEffect(() => {
+    if (!user) return;
+
+    const loadData = async () => {
+      try {
+        const data = await documentService.loadDocument(user.uid);
+        if (data) {
+          setPages(data.pages);
+        }
+      } catch (err) {
+        console.error('Error loading document:', err);
+      }
+    };
+
+    loadData();
+  }, [user]);
+
+  // Save changes with debounce
+  useEffect(() => {
+    if (!user) return;
+
+    const timeout = setTimeout(async () => {
+      try {
+        await documentService.saveDocument({
+          userId: user.uid,
+          pages,
+          lastUpdated: Date.now(),
+        });
+      } catch (err) {
+        console.error('Error saving document:', err);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [user, pages]);
 
   // Add useEffect to update paperHeight when ref changes
   useEffect(() => {
@@ -97,19 +137,6 @@ export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
       };
     }
   }, []);
-
-  // Load data from localStorage on mount
-  useEffect(() => {
-    const savedPages = localStorage.getItem('childDocumentPages');
-    if (savedPages) {
-      setPages(JSON.parse(savedPages));
-    }
-  }, []);
-
-  // Save to localStorage whenever pages change
-  useEffect(() => {
-    localStorage.setItem('childDocumentPages', JSON.stringify(pages));
-  }, [pages]);
 
   const addStickyNote = (text: string) => {
     const basePosition = { x: 900.14, y: 28.58 };
