@@ -6,9 +6,10 @@ import SmallPaper from './SmallPaper';
 
 interface ChildPageNavigationPillProps {
   parentHeight: number;
+  onAddNote: (text: string) => void;
 }
 
-export default function ChildPageNavigationPill({ parentHeight }: ChildPageNavigationPillProps) {
+export default function ChildPageNavigationPill({ parentHeight, onAddNote }: ChildPageNavigationPillProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState(241);
   const [showSmallPaper, setShowSmallPaper] = useState(false);
@@ -161,7 +162,15 @@ export default function ChildPageNavigationPill({ parentHeight }: ChildPageNavig
           onTouchStart={handleTouchStart}
         />
       </div>
-      {showSmallPaper && <SmallPaper pillPosition={position} />}
+      {showSmallPaper && (
+        <SmallPaper 
+          pillPosition={position} 
+          onAddNote={(text) => {
+            onAddNote(text);
+            setShowSmallPaper(false);
+          }}
+        />
+      )}
     </>
   );
 } 
