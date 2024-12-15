@@ -5,6 +5,8 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase/config';
 import { createOrUpdateUser } from '../firebase/db';
 import { useRouter } from 'next/navigation';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase/config';
 
 interface AuthContextType {
   user: User | null;
@@ -30,13 +32,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (user) {
         try {
-          await createOrUpdateUser({
-            uid: user.uid,
-            email: user.email || '',
-            lastLogin: Date.now(),
-          });
+          // Check if user exists in database
+          const userRef = doc(db, 'users', user.uid);
+          const userDoc = await getDoc(userRef);
+
+          if (!userDoc.exists()) {
+            // First time user - create their records
+            console.log('Creating new user record');
+            await createOrUpdateUser({
+              uid: user.uid,
+              email: user.email || '',
+              lastLogin: Date.now(),
+            });
+          } else {
+            // Existing user - just update login time
+            console.log('Updating existing user');
+            await createOrUpdateUser({
+              uid: user.uid,
+              email: user.email || '',
+              lastLogin: Date.now(),
+            });
+          }
         } catch (err) {
-          console.error('Error updating user:', err);
+          console.error('Error handling user data:', err);
           setError(err instanceof Error ? err.message : 'Unknown error');
         }
       } else {

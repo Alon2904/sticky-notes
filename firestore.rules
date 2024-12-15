@@ -1,26 +1,35 @@
 rules_version = '2';
+
+// Version 1.0.1 - Updated structure for notes
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function to check if user is authenticated
+    // Helper functions
     function isAuthenticated() {
       return request.auth != null;
     }
     
-    // Helper function to check if user owns the document
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
 
-    // User profiles
+    // Users collection
     match /users/{userId} {
-      allow read: if isAuthenticated() && isOwner(userId);
-      allow create: if isAuthenticated() && isOwner(userId);
-      allow update: if isAuthenticated() && isOwner(userId);
+      // Base user document
+      allow read, write: if isAuthenticated() && isOwner(userId);
       
-      // Child documents subcollection
-      match /documents/child {
-        allow read: if isAuthenticated() && isOwner(userId);
-        allow write: if isAuthenticated() && isOwner(userId);
+      // Documents subcollection
+      match /documents/{documentId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+        
+        // Pages subcollection
+        match /pages/{pageId} {
+          allow read, write: if isAuthenticated() && isOwner(userId);
+          
+          // Notes subcollection
+          match /notes/{noteId} {
+            allow read, write: if isAuthenticated() && isOwner(userId);
+          }
+        }
       }
     }
   }
