@@ -4,16 +4,16 @@ interface PaperProps {
   children: React.ReactNode;
   className?: string;
   style?: CSSProperties;
-  noMargin?: boolean;
   onClick?: (e: React.MouseEvent) => void;
+  noMargin?: boolean;
 }
 
 const Paper = forwardRef<HTMLDivElement, PaperProps>(({ 
   children, 
   className = '', 
   style = {}, 
-  noMargin = false,
   onClick,
+  noMargin = false,
 }, ref) => {
   return (
     <div
@@ -21,10 +21,10 @@ const Paper = forwardRef<HTMLDivElement, PaperProps>(({
       className={`bg-white z-40 shadow-custom ${className}`}
       onClick={onClick}
       style={{
-        position: noMargin ? 'absolute' : 'relative',
+        position: 'relative',
         marginTop: noMargin ? 0 : '92px',
-        left: noMargin ? '107px' : '50%',
-        transform: noMargin ? 'none' : 'translateX(-50%)',
+        left: '50%',
+        transform: 'translateX(-50%)',
         width: style.width || '940px',
         minHeight: 'calc((100vw - 254px) * 1.4142)',
         backgroundColor: 'rgba(255, 255, 255, 1)',
