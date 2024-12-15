@@ -7,6 +7,7 @@ interface StickyNoteProps {
   onPositionChange: (x: number, y: number) => void;
   id: number;
   onTextChange: (id: number, newText: string) => void;
+  color: string;
 }
 
 export default function StickyNote({ 
@@ -15,7 +16,8 @@ export default function StickyNote({
   position, 
   onPositionChange, 
   id,
-  onTextChange 
+  onTextChange,
+  color 
 }: StickyNoteProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editableText, setEditableText] = useState(text);
@@ -124,7 +126,7 @@ export default function StickyNote({
         position: 'absolute',
         width: '131px',
         height: '125px',
-        backgroundColor: 'var(--tag-yellow)',
+        backgroundColor: color,
         transform: 'rotate(-10deg)',
         opacity: 0.95,
         borderRadius: '2px',

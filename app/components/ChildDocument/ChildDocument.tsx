@@ -16,6 +16,13 @@ interface StickyNoteType {
   id: number;
   text: string;
   position: { x: number; y: number };
+  color: string;
+}
+
+interface PageData {
+  color: string;
+  id: number;
+  notes: StickyNoteType[];
 }
 
 const findAvailablePosition = (notes: StickyNoteType[], baseX: number, baseY: number): { x: number; y: number } => {
@@ -62,69 +69,102 @@ const findAvailablePosition = (notes: StickyNoteType[], baseX: number, baseY: nu
 export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
   const paperRef = useRef<HTMLDivElement>(null);
   const [paperHeight, setPaperHeight] = useState(0);
-  const [activePage, setActivePage] = useState(1); // Start with yellow (middle) page
-  const [stickyNotes, setStickyNotes] = useState<StickyNoteType[]>([]);
-
-  useEffect(() => {
-    if (paperRef.current) {
-      setPaperHeight(paperRef.current.getBoundingClientRect().height);
-    }
-  }, []);
+  const [activePage, setActivePage] = useState(1);
+  const [pages, setPages] = useState<PageData[]>([
+    { color: 'var(--tag-peach)', id: 0, notes: [] },
+    { color: 'var(--tag-yellow)', id: 1, notes: [] },
+    { color: 'var(--tag-purple)', id: 2, notes: [] },
+  ]);
 
   const INITIAL_TOP = 16;
   const TAG_HEIGHT = 32;
   const TAG_GAP = 4;
 
-  const pages = [
-    { color: 'var(--tag-peach)', id: 0 },
-    { color: 'var(--tag-yellow)', id: 1 },
-    { color: 'var(--tag-purple)', id: 2 },
-  ];
+  // Add useEffect to update paperHeight when ref changes
+  useEffect(() => {
+    if (paperRef.current) {
+      const updateHeight = () => {
+        setPaperHeight(paperRef.current?.getBoundingClientRect().height || 0);
+      };
+
+      updateHeight();
+      
+      // Update height on window resize
+      window.addEventListener('resize', updateHeight);
+      
+      return () => {
+        window.removeEventListener('resize', updateHeight);
+      };
+    }
+  }, []);
+
+  // Load data from localStorage on mount
+  useEffect(() => {
+    const savedPages = localStorage.getItem('childDocumentPages');
+    if (savedPages) {
+      setPages(JSON.parse(savedPages));
+    }
+  }, []);
+
+  // Save to localStorage whenever pages change
+  useEffect(() => {
+    localStorage.setItem('childDocumentPages', JSON.stringify(pages));
+  }, [pages]);
 
   const addStickyNote = (text: string) => {
     const basePosition = { x: 900.14, y: 28.58 };
-    const position = findAvailablePosition(stickyNotes, basePosition.x, basePosition.y);
+    const currentPageNotes = pages[activePage].notes;
+    const position = findAvailablePosition(currentPageNotes, basePosition.x, basePosition.y);
 
     const newNote: StickyNoteType = {
       id: Date.now(),
       text,
       position,
+      color: pages[activePage].color,
     };
-    setStickyNotes([...stickyNotes, newNote]);
+
+    setPages(currentPages => 
+      currentPages.map((page, index) => 
+        index === activePage
+          ? { ...page, notes: [...page.notes, newNote] }
+          : page
+      )
+    );
   };
 
   const updateNotePosition = (id: number, x: number, y: number) => {
-    setStickyNotes(notes => 
-      notes.map(note => 
-        note.id === id 
-          ? { ...note, position: { x, y } }
-          : note
+    setPages(currentPages => 
+      currentPages.map((page, index) => 
+        index === activePage
+          ? {
+              ...page,
+              notes: page.notes.map(note => 
+                note.id === id 
+                  ? { ...note, position: { x, y } }
+                  : note
+              )
+            }
+          : page
       )
     );
   };
 
   const updateNoteText = (id: number, newText: string) => {
-    setStickyNotes(notes => 
-      notes.map(note => 
-        note.id === id 
-          ? { ...note, text: newText }
-          : note
+    setPages(currentPages => 
+      currentPages.map((page, index) => 
+        index === activePage
+          ? {
+              ...page,
+              notes: page.notes.map(note => 
+                note.id === id 
+                  ? { ...note, text: newText }
+                  : note
+              )
+            }
+          : page
       )
     );
   };
-
-  // Save notes to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('stickyNotes', JSON.stringify(stickyNotes));
-  }, [stickyNotes]);
-
-  // Load notes from localStorage on component mount
-  useEffect(() => {
-    const savedNotes = localStorage.getItem('stickyNotes');
-    if (savedNotes) {
-      setStickyNotes(JSON.parse(savedNotes));
-    }
-  }, []);
 
   return (
     <Paper
@@ -158,12 +198,13 @@ export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
           onAddNote={addStickyNote}
         />
       )}
-      {stickyNotes.map((note) => (
+      {pages[activePage].notes.map((note) => (
         <StickyNote
           key={note.id}
           id={note.id}
           text={note.text}
           position={note.position}
+          color={note.color}
           onPositionChange={(x, y) => updateNotePosition(note.id, x, y)}
           onTextChange={updateNoteText}
         />
