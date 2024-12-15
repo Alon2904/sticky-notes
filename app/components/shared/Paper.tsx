@@ -24,10 +24,9 @@ const Paper = forwardRef<HTMLDivElement, PaperProps>(({
   // Base sizes and spacing
   const BASE_DOCUMENT_WIDTH = 940;
   const BASE_CHILD_WIDTH = 980;
+  const BREAKPOINT = 1295;
   const MIN_SIDE_MARGIN = 16;
   const NAV_WIDTH = 56;
-  const PILL_WIDTH = 40;
-  const PILL_MARGIN = 16;
   const A4_RATIO = 1.4142;
 
   useEffect(() => {
@@ -35,44 +34,33 @@ const Paper = forwardRef<HTMLDivElement, PaperProps>(({
       const screenWidth = window.innerWidth;
       const isChildDocument = style.width === `${BASE_CHILD_WIDTH}px`;
       const baseWidth = isChildDocument ? BASE_CHILD_WIDTH : BASE_DOCUMENT_WIDTH;
-      
-      // Calculate required spacing
       const navigationSpace = screenWidth <= 768 ? 0 : NAV_WIDTH;
-      const pillSpace = isChildDocument ? PILL_WIDTH + PILL_MARGIN : 0;
-      const totalMargins = (MIN_SIDE_MARGIN * 2) + navigationSpace + pillSpace;
 
-      // Calculate maximum available width
-      const availableWidth = screenWidth - totalMargins;
-      
-      // Calculate scale to fit available space
-      let scale = availableWidth / baseWidth;
-
-      // More aggressive scaling for smaller screens
-      if (screenWidth <= 768) {
-        scale *= 0.85; // 85% of calculated scale for mobile
-      } else if (screenWidth <= 1024) {
-        scale *= 0.9; // 90% of calculated scale for tablets
+      if (screenWidth <= BREAKPOINT) {
+        // Calculate available width considering navigation and margins
+        const availableWidth = screenWidth - (MIN_SIDE_MARGIN * 2) - navigationSpace;
+        
+        // Calculate scale based on original proportions
+        const scale = availableWidth / baseWidth;
+        
+        // Apply scale with a minimum size constraint
+        const newWidth = Math.max(
+          Math.min(baseWidth, Math.floor(baseWidth * scale)),
+          baseWidth * 0.6 // Minimum 60% of original size
+        );
+        
+        setPaperWidth(newWidth);
+      } else {
+        setPaperWidth(baseWidth);
       }
-
-      // Apply scale, ensuring paper fits within available space
-      const newWidth = Math.min(baseWidth, Math.floor(baseWidth * scale));
-      setPaperWidth(newWidth);
     };
 
-    // Initial update
     updateWidth();
-
-    // Add resize observer for more reliable updates
-    const resizeObserver = new ResizeObserver(() => {
+    const handleResize = () => {
       requestAnimationFrame(updateWidth);
-    });
-
-    resizeObserver.observe(document.documentElement);
-
-    // Cleanup
-    return () => {
-      resizeObserver.disconnect();
     };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [style.width]);
 
   return (

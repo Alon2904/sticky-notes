@@ -187,10 +187,13 @@ export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
     }
   }, []);
 
+  // A4 ratio constant (width:height = 1:1.4142)
+  const A4_RATIO = 1.4142;
+
   return (
     <Paper
       ref={paperRef}
-      className="absolute"
+      className="absolute mx-auto max-w-[calc(100vw-32px)] md:max-w-[calc(100vw-64px)] lg:max-w-[calc(100vw-128px)]"
       noMargin
       onClick={onClick}
       style={{
@@ -199,6 +202,7 @@ export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
         left: '50%',
         transform: 'translateX(-50%)',
         width: `${width}px`,
+        height: `${width * A4_RATIO}px`,
         zIndex: 50,
       }}
     >
@@ -213,12 +217,15 @@ export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
           }}
         />
       ))}
-      {paperHeight > 0 && (
-        <ChildPageNavigationPill 
-          parentHeight={paperHeight}
-          onAddNote={addStickyNote}
-        />
-      )}
+      <div className="relative">
+        {paperHeight > 0 && (
+          <ChildPageNavigationPill 
+            parentHeight={paperHeight}
+            onAddNote={addStickyNote}
+            className="hidden md:block"
+          />
+        )}
+      </div>
       {pages[activePage].notes.map((note) => (
         <StickyNote
           key={note.id}
@@ -228,6 +235,7 @@ export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
           color={note.color}
           onPositionChange={(x, y) => updateNotePosition(note.id, x, y)}
           onTextChange={updateNoteText}
+          className="max-w-full sm:max-w-none"
         />
       ))}
     </Paper>

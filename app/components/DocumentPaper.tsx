@@ -1,34 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import Paper from './shared/Paper';
-import Button from './shared/Button';
+import ParentDocument from './ParentDocument/ParentDocument';
 import ChildDocument from './ChildDocument/ChildDocument';
 
 export default function DocumentPaper() {
   const [showChildPaper, setShowChildPaper] = useState(false);
 
   return (
-    <div className="relative">
-      {/* Original Paper */}
-      <Paper 
-        onClick={showChildPaper ? () => setShowChildPaper(false) : undefined}
-        style={{
-          width: showChildPaper ? '936px' : '940px',
-        }}
-      >
-        <div className="absolute p-[32px]">
-          <Button 
-            size="large" 
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              e.stopPropagation();
-              setShowChildPaper(true);
-            }}
-          >
-            Open Child Document
-          </Button>
-        </div>
-      </Paper>
+    <div className="relative w-full min-h-screen">
+      {/* Parent Paper */}
+      <ParentDocument 
+        onOpenChild={() => setShowChildPaper(true)}
+        onCloseChild={() => setShowChildPaper(false)}
+        isChildOpen={showChildPaper}
+      />
 
       {/* Child Paper with all its features */}
       {showChildPaper && (

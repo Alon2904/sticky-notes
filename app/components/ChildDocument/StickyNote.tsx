@@ -8,6 +8,7 @@ interface StickyNoteProps {
   id: number;
   onTextChange: (id: number, newText: string) => void;
   color: string;
+  className?: string;
 }
 
 export default function StickyNote({ 
@@ -17,7 +18,8 @@ export default function StickyNote({
   onPositionChange, 
   id,
   onTextChange,
-  color 
+  color,
+  className 
 }: StickyNoteProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editableText, setEditableText] = useState(text);
@@ -129,6 +131,7 @@ export default function StickyNote({
       ref={noteRef}
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
+      className={className}
       style={{
         position: 'absolute',
         width: '131px',

@@ -1,21 +1,14 @@
 'use client';
 
-import { signOut } from 'firebase/auth';
 import { auth } from '../firebase/config';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../providers/AuthProvider';
-import { documentService } from '../firebase/documentService';
 
 export default function LogoutButton() {
   const router = useRouter();
-  const { user } = useAuth();
 
   const handleLogout = async () => {
     try {
-      if (user) {
-        documentService.clearCache(user.uid); // Clear cache on logout
-      }
-      await signOut(auth);
+      await auth.signOut();
       router.push('/login');
     } catch (error) {
       console.error('Error signing out:', error);
@@ -25,10 +18,24 @@ export default function LogoutButton() {
   return (
     <button
       onClick={handleLogout}
-      className="fixed top-4 right-4 z-50 bg-white shadow-custom rounded-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-      style={{
-        fontFamily: 'var(--font-geist-sans)',
-      }}
+      className="
+        px-3 py-1.5 
+        sm:px-4 sm:py-2 
+        bg-white 
+        rounded-lg 
+        shadow-custom 
+        text-xs 
+        sm:text-sm 
+        font-medium 
+        text-gray-800 
+        hover:bg-gray-50 
+        active:bg-gray-100
+        transition-all 
+        duration-200
+        whitespace-nowrap
+        min-w-[64px]
+        sm:min-w-[80px]
+      "
     >
       Logout
     </button>
