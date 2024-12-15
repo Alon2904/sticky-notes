@@ -21,19 +21,25 @@ export default function StickyNote({
 }: StickyNoteProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editableText, setEditableText] = useState(text);
+  const [localPosition, setLocalPosition] = useState(position);
   const noteRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isDragging = useRef(false);
   const dragStart = useRef({ x: 0, y: 0 });
   const scrollInterval = useRef<NodeJS.Timeout | null>(null);
 
-  // Handle double click to edit
+  // Update local position when prop changes (not during drag)
+  useEffect(() => {
+    if (!isDragging.current) {
+      setLocalPosition(position);
+    }
+  }, [position]);
+
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsEditing(true);
   };
 
-  // Handle text editing completion
   const handleBlur = () => {
     setIsEditing(false);
     if (editableText !== text) {
@@ -41,14 +47,12 @@ export default function StickyNote({
     }
   };
 
-  // Focus textarea when entering edit mode
   useEffect(() => {
     if (isEditing && textareaRef.current) {
       textareaRef.current.focus();
     }
   }, [isEditing]);
 
-  // Prevent dragging when editing
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!isEditing) {
       e.preventDefault();
@@ -64,11 +68,11 @@ export default function StickyNote({
       const deltaX = e.clientX - dragStart.current.x;
       const deltaY = e.clientY - dragStart.current.y;
 
-      const newX = position.x + deltaX;
-      const newY = position.y + deltaY;
+      const newX = localPosition.x + deltaX;
+      const newY = localPosition.y + deltaY;
 
-      // Update position
-      onPositionChange(newX, newY);
+      // Only update local position during drag
+      setLocalPosition({ x: newX, y: newY });
 
       // Handle auto-scrolling
       const scrollThreshold = 50;
@@ -76,14 +80,12 @@ export default function StickyNote({
       const { top, bottom } = document.documentElement.getBoundingClientRect();
 
       if (e.clientY < top + scrollThreshold) {
-        // Scroll up
         if (!scrollInterval.current) {
           scrollInterval.current = setInterval(() => {
             window.scrollBy(0, -scrollSpeed);
           }, 16);
         }
       } else if (e.clientY > bottom - scrollThreshold) {
-        // Scroll down
         if (!scrollInterval.current) {
           scrollInterval.current = setInterval(() => {
             window.scrollBy(0, scrollSpeed);
@@ -98,7 +100,12 @@ export default function StickyNote({
     };
 
     const handleMouseUp = () => {
-      isDragging.current = false;
+      if (isDragging.current) {
+        // Only notify parent of final position
+        onPositionChange(localPosition.x, localPosition.y);
+        isDragging.current = false;
+      }
+
       if (scrollInterval.current) {
         clearInterval(scrollInterval.current);
         scrollInterval.current = null;
@@ -115,7 +122,7 @@ export default function StickyNote({
         clearInterval(scrollInterval.current);
       }
     };
-  }, [position, onPositionChange]);
+  }, [localPosition, onPositionChange]);
 
   return (
     <div
@@ -131,9 +138,9 @@ export default function StickyNote({
         opacity: 0.95,
         borderRadius: '2px',
         mixBlendMode: 'multiply',
-        cursor: isEditing ? 'text' : 'grab',
-        left: `${position.x}px`,
-        top: `${position.y}px`,
+        cursor: isEditing ? 'text' : isDragging.current ? 'grabbing' : 'grab',
+        left: `${localPosition.x}px`,
+        top: `${localPosition.y}px`,
         ...style,
       }}
     >

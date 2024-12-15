@@ -83,42 +83,91 @@ export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
   const TAG_HEIGHT = 32;
   const TAG_GAP = 4;
 
-  // Load data when component mounts
+  // Load initial data
   useEffect(() => {
     if (!user) return;
-
     const loadData = async () => {
-      try {
-        const data = await documentService.loadDocument(user.uid);
-        if (data) {
-          setPages(data.pages);
-        }
-      } catch (err) {
-        console.error('Error loading document:', err);
+      const data = await documentService.loadDocument(user.uid);
+      if (data) {
+        setPages(data.pages);
       }
     };
-
     loadData();
   }, [user]);
 
-  // Save changes with debounce
-  useEffect(() => {
+  // Save to database
+  const saveToDatabase = async (updatedPages: PageData[]) => {
+    if (!user) return;
+    try {
+      await documentService.saveDocument({
+        userId: user.uid,
+        pages: updatedPages,
+        lastUpdated: Date.now(),
+      });
+    } catch (err) {
+      console.error('Error saving:', err);
+    }
+  };
+
+  const addStickyNote = async (text: string) => {
     if (!user) return;
 
-    const timeout = setTimeout(async () => {
-      try {
-        await documentService.saveDocument({
-          userId: user.uid,
-          pages,
-          lastUpdated: Date.now(),
-        });
-      } catch (err) {
-        console.error('Error saving document:', err);
-      }
-    }, 1000);
+    const basePosition = { x: 900.14, y: 28.58 };
+    const currentPageNotes = pages[activePage].notes;
+    const position = findAvailablePosition(currentPageNotes, basePosition.x, basePosition.y);
 
-    return () => clearTimeout(timeout);
-  }, [user, pages]);
+    const newNote: StickyNoteType = {
+      id: Date.now(),
+      text,
+      position,
+      color: pages[activePage].color,
+    };
+
+    const updatedPages = pages.map((page, index) => 
+      index === activePage
+        ? { ...page, notes: [...page.notes, newNote] }
+        : page
+    );
+
+    setPages(updatedPages);
+    await saveToDatabase(updatedPages);
+  };
+
+  const updateNotePosition = async (id: number, x: number, y: number) => {
+    const updatedPages = pages.map((page, index) => 
+      index === activePage
+        ? {
+            ...page,
+            notes: page.notes.map(note => 
+              note.id === id 
+                ? { ...note, position: { x, y } }
+                : note
+            )
+          }
+        : page
+    );
+
+    setPages(updatedPages);
+    await saveToDatabase(updatedPages);
+  };
+
+  const updateNoteText = async (id: number, newText: string) => {
+    const updatedPages = pages.map((page, index) => 
+      index === activePage
+        ? {
+            ...page,
+            notes: page.notes.map(note => 
+              note.id === id 
+                ? { ...note, text: newText }
+                : note
+            )
+          }
+        : page
+    );
+
+    setPages(updatedPages);
+    await saveToDatabase(updatedPages);
+  };
 
   // Add useEffect to update paperHeight when ref changes
   useEffect(() => {
@@ -137,61 +186,6 @@ export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
       };
     }
   }, []);
-
-  const addStickyNote = (text: string) => {
-    const basePosition = { x: 900.14, y: 28.58 };
-    const currentPageNotes = pages[activePage].notes;
-    const position = findAvailablePosition(currentPageNotes, basePosition.x, basePosition.y);
-
-    const newNote: StickyNoteType = {
-      id: Date.now(),
-      text,
-      position,
-      color: pages[activePage].color,
-    };
-
-    setPages(currentPages => 
-      currentPages.map((page, index) => 
-        index === activePage
-          ? { ...page, notes: [...page.notes, newNote] }
-          : page
-      )
-    );
-  };
-
-  const updateNotePosition = (id: number, x: number, y: number) => {
-    setPages(currentPages => 
-      currentPages.map((page, index) => 
-        index === activePage
-          ? {
-              ...page,
-              notes: page.notes.map(note => 
-                note.id === id 
-                  ? { ...note, position: { x, y } }
-                  : note
-              )
-            }
-          : page
-      )
-    );
-  };
-
-  const updateNoteText = (id: number, newText: string) => {
-    setPages(currentPages => 
-      currentPages.map((page, index) => 
-        index === activePage
-          ? {
-              ...page,
-              notes: page.notes.map(note => 
-                note.id === id 
-                  ? { ...note, text: newText }
-                  : note
-              )
-            }
-          : page
-      )
-    );
-  };
 
   return (
     <Paper
