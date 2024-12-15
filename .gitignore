@@ -10,6 +10,9 @@
 !.yarn/releases
 !.yarn/versions
 
+# firebase
+.firebaserc
+
 # commitizen
 .cz.toml
 
@@ -42,3 +45,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Firebase
+.firebase/
+firebase-debug.log
+.firebaserc
+firebase-debug.*.log
+ui-debug.log
+
+# Keep firebase.json and firestore.rules
+# firebase.json and firestore.rules should be committed
