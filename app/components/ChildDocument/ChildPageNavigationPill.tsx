@@ -7,9 +7,16 @@ import SmallPaper from './SmallPaper';
 interface ChildPageNavigationPillProps {
   parentHeight: number;
   onAddNote: (text: string) => void;
+  style?: React.CSSProperties;
+  className?: string;
 }
 
-export default function ChildPageNavigationPill({ parentHeight, onAddNote }: ChildPageNavigationPillProps) {
+export default function ChildPageNavigationPill({ 
+  parentHeight, 
+  onAddNote, 
+  style,
+  className 
+}: ChildPageNavigationPillProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState(241);
   const [showSmallPaper, setShowSmallPaper] = useState(false);
@@ -121,12 +128,11 @@ export default function ChildPageNavigationPill({ parentHeight, onAddNote }: Chi
     <>
       <div 
         ref={pillRef}
-        className="fixed bg-white rounded-[28px] shadow-custom"
+        className={`absolute bg-white rounded-[28px] shadow-custom ${className || ''}`}
         style={{
-          position: 'absolute',
           width: '40px',
           height: '240px',
-          left: '956px',
+          right: '-56px',
           top: `${position}px`,
           backgroundColor: 'rgba(255, 255, 255, 1)',
           opacity: 1,
@@ -135,6 +141,7 @@ export default function ChildPageNavigationPill({ parentHeight, onAddNote }: Chi
           touchAction: 'none',
           zIndex: 51,
           borderRadius: '28px',
+          ...style,
         }}
       >
         <div 
