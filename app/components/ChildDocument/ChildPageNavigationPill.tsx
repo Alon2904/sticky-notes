@@ -141,6 +141,7 @@ export default function ChildPageNavigationPill({
           touchAction: 'none',
           zIndex: 51,
           borderRadius: '28px',
+          marginRight: '40px', // Changed from className to style for margin-right
           ...style,
         }}
       >

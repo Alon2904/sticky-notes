@@ -4,21 +4,21 @@ import LogoutButton from './components/LogoutButton'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#FFFCF9] flex flex-col">
-      <header className="h-[72px] md:h-[92px] mb-4">
-        <div className="relative w-full p-4 md:p-6 lg:p-8 flex justify-end">
+    <div className="min-h-screen bg-[#FFFCF9]" data-component="home-container">
+      <header data-component="home-header">
+        <div className="flex justify-end p-3 md:p-5 lg:p-7" data-component="logout-container">
           <LogoutButton />
         </div>
       </header>
       
-      <div className="flex flex-1">
+      <div className="flex justify-center items-center" data-component="main-content">
         <NavigationMain />
-        <main className="flex-1 px-4 md:px-8 lg:px-16">
+        <main data-component="document-container">
           <DocumentPaper />
         </main>
       </div>
 
-      <footer className="w-full h-[60px] md:h-[80px] mt-16 border-t border-gray-200" />
+      <footer className="border-t border-gray-200" data-component="home-footer" />
     </div>
   )
 }

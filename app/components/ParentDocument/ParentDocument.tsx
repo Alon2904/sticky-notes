@@ -13,7 +13,7 @@ export default function ParentDocument({ onOpenChild, onCloseChild, isChildOpen 
   return (
     <Paper 
       onClick={isChildOpen ? onCloseChild : undefined}
-      className="mx-auto max-w-[calc(100vw-32px)] md:max-w-[calc(100vw-64px)] lg:max-w-[calc(100vw-128px)]"
+      className="w-full max-w-[calc(100vw-32px)] md:max-w-[calc(100vw-64px)] lg:max-w-[calc(100vw-128px)]"
       style={{
         width: isChildOpen ? '936px' : '940px',
       }}
