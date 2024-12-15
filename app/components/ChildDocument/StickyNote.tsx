@@ -30,6 +30,41 @@ export default function StickyNote({
   const dragStart = useRef({ x: 0, y: 0 });
   const scrollInterval = useRef<NodeJS.Timeout | null>(null);
 
+  // Base sizes for sticky note
+  const BASE_WIDTH = 131;
+  const BASE_HEIGHT = 125;
+  const BASE_PAPER_WIDTH = 980;
+
+  // Calculate scale based on viewport width
+  const getScale = () => {
+    const currentPaperWidth = Math.min(
+      window.innerWidth - 32,  // mobile
+      Math.min(window.innerWidth - 64, BASE_PAPER_WIDTH) // desktop
+    );
+    return currentPaperWidth / BASE_PAPER_WIDTH;
+  };
+
+  // Scale position based on paper size
+  const getScaledPosition = () => {
+    const scale = getScale();
+    return {
+      x: position.x * scale,
+      y: position.y * scale
+    };
+  };
+
+  // Update position when window resizes
+  useEffect(() => {
+    const handleResize = () => {
+      if (!isDragging.current) {
+        setLocalPosition(getScaledPosition());
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [position]);
+
   // Update local position when prop changes (not during drag)
   useEffect(() => {
     if (!isDragging.current) {
@@ -131,13 +166,14 @@ export default function StickyNote({
       ref={noteRef}
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
-      className={className}
+      className={`${className} transform-gpu`}
       style={{
         position: 'absolute',
-        width: '131px',
-        height: '125px',
+        width: `${BASE_WIDTH * getScale()}px`,
+        height: `${BASE_HEIGHT * getScale()}px`,
         backgroundColor: color,
-        transform: 'rotate(-10deg)',
+        transform: `rotate(-10deg) scale(${getScale()})`,
+        transformOrigin: 'top left',
         opacity: 0.95,
         borderRadius: '2px',
         mixBlendMode: 'multiply',

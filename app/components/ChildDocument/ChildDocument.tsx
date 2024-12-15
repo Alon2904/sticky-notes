@@ -198,7 +198,7 @@ export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
       onClick={onClick}
       style={{
         position: 'absolute',
-        top: '20px',
+        top: `${20 * (width / 700)}px`,
         left: '50%',
         transform: 'translateX(-50%)',
         width: `${width}px`,
@@ -231,9 +231,16 @@ export default function ChildDocument({ onClick, width }: ChildDocumentProps) {
           key={note.id}
           id={note.id}
           text={note.text}
-          position={note.position}
+          position={{
+            x: note.position.x,
+            y: note.position.y
+          }}
           color={note.color}
-          onPositionChange={(x, y) => updateNotePosition(note.id, x, y)}
+          onPositionChange={(x, y) => {
+            const scale = paperRef.current ? 
+              paperRef.current.getBoundingClientRect().width / width : 1;
+            updateNotePosition(note.id, x / scale, y / scale);
+          }}
           onTextChange={updateNoteText}
           className="max-w-full sm:max-w-none"
         />
